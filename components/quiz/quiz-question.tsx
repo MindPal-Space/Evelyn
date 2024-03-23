@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useActions, useUIState } from "ai/rsc";
 import { AI } from "@/app/action";
@@ -6,9 +8,9 @@ import { ToastAction } from '../ui/toast';
 import { MemoizedReactMarkdown } from '../markdown';
 import { UserMessage } from './message';
 
-
 // @ts-ignore
-export function QuizQuestion({ question, questionType, possibleAnswers, showAnswer, answer, explanation, source }) {
+export default function QuizQuestion({ question, questionType, possibleAnswers, showAnswer, answer, explanation, source }) {
+  
   const [answerUI, setAnswerUI] = useState<boolean>(false);
   const toast = useToast();
   const [selectedOption, setSelectedOption] = useState(questionType === 'multiple-choice' ? [] : '');
@@ -45,7 +47,7 @@ export function QuizQuestion({ question, questionType, possibleAnswers, showAnsw
       return;
     }
     // Add user message UI
-    setMessages(currentMessages => [
+    setMessages((currentMessages: any[]) => [
       ...currentMessages,
       {
         id: Date.now(),
@@ -57,7 +59,7 @@ export function QuizQuestion({ question, questionType, possibleAnswers, showAnsw
     const response = await submitAnswer(selectedOption);
     setAnswerUI(response.answerUI)
     // Insert a new system message to the UI.
-    setMessages(currentMessages => [
+    setMessages((currentMessages: any[]) => [
       ...currentMessages,
       response.newMessage,
     ]);
@@ -65,7 +67,7 @@ export function QuizQuestion({ question, questionType, possibleAnswers, showAnsw
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="w-full p-6 bg-white rounded-lg shadow-md">
       <div className="mb-4">
         <MemoizedReactMarkdown>
           {question}
@@ -103,25 +105,6 @@ export function QuizQuestion({ question, questionType, possibleAnswers, showAnsw
           </button>
         </div>
       </form>
-      {showAnswer && answerUI && (
-        <div className="mt-4">
-          <div className="mt-6">
-            {explanation && (
-              <p className="text-sm mt-1">{explanation}</p>
-            )}
-          </div>
-          <div className="mt-4">
-            {source && (
-              <p className="text-sm mt-1">Source: <a href={source}>{source}</a></p>
-            )}
-          </div>
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold">Explanation</h3>
-            <p>{`The correct answer is: "${answer}".`}</p>
-          </div>
-        </div>
-
-      )}
     </div>
   );
 }

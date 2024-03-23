@@ -1,24 +1,24 @@
+import './globals.css';
 import type { Metadata } from 'next';
-import { GeistMono } from 'geist/font/mono';
-import { GeistSans } from 'geist/font/sans';
 import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from '@/components/ui/toaster';
-import './globals.css';
-
 import { AI } from './action';
 import { Header } from '@/components/header';
 import { Providers } from '@/components/providers';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "latin", "latin-ext", "vietnamese"] });
 
 const meta = {
-  title: 'Vercel AI SDK Demo',
+  title: 'EverLearns AI Tutor Demo',
   description:
-    'A demo of the Vercel AI SDK, a tool for building AI-powered UI.',
+    'A demo of the EverLearns AI Tutor, a tutor that is smart enough to use several interfaces to interact with your students.',
 };
 export const metadata: Metadata = {
   ...meta,
   title: {
-    default: 'Vercel AI SDK Demo',
-    template: `%s - Vercel AI SDK Demo`,
+    default: 'EverLearns AI Tutor Demo',
+    template: `%s - EverLearns AI Tutor Demo`,
   },
   icons: {
     icon: '/favicon.ico',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     ...meta,
     card: 'summary_large_image',
-    site: '@vercel',
+    site: '@everlearns',
   },
   openGraph: {
     ...meta,
@@ -52,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`font-sans antialiased ${GeistSans.variable} ${GeistMono.variable}`}
+        className={`${inter.className} font-sans antialiased`}
       >
         <Toaster />
         {/* @ts-ignore */}

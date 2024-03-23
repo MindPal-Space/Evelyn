@@ -1,30 +1,23 @@
-// Assuming use of a Next.js project
-'use client';
+import getQuizGenMsgList from "@/prompt/plugin/quiz";
+import OpenAI from "openai";
 
-import dynamic from 'next/dynamic';
-import { QuizStartSkeleton } from './quiz-start-skeleton';
-import { QuizQuestionSkeleton } from './quiz-question-skeleton';
-import { QuizResultSkeleton } from './quiz-result-skeleton';
+export async function generateQuiz (topic: string, type: string) {
 
-export { spinner } from './spinner';
-export { BotCard, BotMessage, SystemMessage } from './message';
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "",
+  });
 
-const QuizStart = dynamic(() => import('./quiz-start').then(mod => mod.QuizStart), {
-  ssr: false,
-  loading: () => <QuizStartSkeleton />,
-});
+  const response = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    stream: false,
+    messages: getQuizGenMsgList({
+      topic,
+      type, 
+      showCorrectAnswer: false,
+    }),
+  });
 
-const QuizQuestion = dynamic(
-  () => import('./quiz-question').then(mod => mod.QuizQuestion),
-  {
-    ssr: false,
-    loading: () => <QuizQuestionSkeleton />,
-  },
-);
-
-const QuizResult = dynamic(() => import('./quiz-result').then(mod => mod.QuizResult), {
-  ssr: false,
-  loading: () => <QuizResultSkeleton />,
-});
-
-export { QuizStart, QuizQuestion, QuizResult };
+  return {
+    ...JSON.parse(response.choices[0]?.message.content || "")
+  };
+}
