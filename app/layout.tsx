@@ -6,6 +6,7 @@ import { AI } from './action';
 import { Header } from '@/components/header';
 import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({ subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "latin", "latin-ext", "vietnamese"] });
 
@@ -73,6 +74,7 @@ export default function RootLayout({
         </AI>
         <Analytics />
       </body>
+      <GoogleAnalytics gaId="G-RXGK3N19GT" />
     </html>
   );
 }
