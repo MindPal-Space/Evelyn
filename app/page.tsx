@@ -19,6 +19,7 @@ import { IconArrowElbow, IconPlus } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { ChatList } from '@/components/chat-list';
 import { EmptyScreen } from '@/components/empty-screen';
+import Script from 'next/script';
 
 export default function Page() {
   const [messages, setMessages] = useUIState<typeof AI>();
@@ -64,7 +65,7 @@ export default function Page() {
     if (!value) return;
 
     // Add user message UI
-    setMessages(currentMessages => [
+    setMessages((currentMessages: any[]) => [
       ...currentMessages,
       {
         id: Date.now(),
@@ -75,7 +76,7 @@ export default function Page() {
     try {
       // Submit and get response message
       const responseMessage = await submitUserMessage(value);
-      setMessages(currentMessages => [
+      setMessages((currentMessages: any[]) => [
         ...currentMessages,
         responseMessage,
       ]);
@@ -96,7 +97,7 @@ export default function Page() {
           <EmptyScreen
             submitMessage={async message => {
               // Add user message UI
-              setMessages(currentMessages => [
+              setMessages((currentMessages: any[]) => [
                 ...currentMessages,
                 {
                   id: Date.now(),
@@ -106,7 +107,7 @@ export default function Page() {
 
               // Submit and get response message
               const responseMessage = await submitUserMessage(message);
-              setMessages(currentMessages => [
+              setMessages((currentMessages: any[]) => [
                 ...currentMessages,
                 responseMessage,
               ]);
@@ -176,6 +177,21 @@ export default function Page() {
           </div>
         </div>
       </div>
+      <Script async src="https://tally.so/widgets/embed.js"></Script>
+      <Script>
+        {`window.TallyConfig = {
+          "formId": "3XDM1j",
+          "popup": {
+            "width": 340,
+            "emoji": {
+              "text": "👋",
+              "animation": "wave"
+            },
+            "doNotShowAfterSubmit": true,
+            "autoClose": false,
+          }
+        };`}
+      </Script>
     </div>
   );
 }

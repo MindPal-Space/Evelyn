@@ -4,8 +4,6 @@ import { IconAI, IconUser } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { MemoizedReactMarkdown } from '../markdown';
 
-// Different types of message bubbles.
-
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
     <div className="group relative flex items-start md:-ml-12">
@@ -31,12 +29,14 @@ export function BotMessage({
       <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm bg-primary text-primary-foreground">
         <IconAI />
       </div>
-      <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
-      {typeof children === 'string' ? (
-        <MemoizedReactMarkdown>
-          {children}
-        </MemoizedReactMarkdown>
-      ) : (children)}
+      <div className="ml-4 flex-1 overflow-hidden px-1">
+        {typeof children === 'string' ? (
+          <MemoizedReactMarkdown
+            className={"prose"}
+          >
+            {children}
+          </MemoizedReactMarkdown>
+        ) : (children)}
       </div>
     </div>
   );

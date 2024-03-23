@@ -1,25 +1,23 @@
 import Link from 'next/link';
 
 import {
-  IconGitHub,
   IconSeparator,
-  IconSparkles,
-  IconVercel,
 } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { HomeIcon, MagicWandIcon } from '@radix-ui/react-icons';
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full px-4 border-b h-14 shrink-0 bg-background backdrop-blur-xl">
       <span className="inline-flex items-center home-links whitespace-nowrap">
-        <a href="https://vercel.com" rel="noopener" target="_blank">
-          <IconVercel className="w-5 h-5 sm:h-6 sm:w-6" />
+        <a href="https://everlearns.com" rel="noopener" target="_blank">
+          <Image src={"/logo.png"} alt="EverLearns Logo" width={100} height={100} className="h-6 w-auto aspect-auto" />
         </a>
         <IconSeparator className="w-6 h-6 text-muted-foreground/20" />
         <Link href="/">
-          <span className="text-lg font-bold">
-            <IconSparkles className="inline mr-0 w-4 sm:w-5 mb-0.5" />
-            AI
+          <span className="text-lg font-semibold">
+            AI Tutor Demo
           </span>
         </Link>
       </span>
@@ -27,21 +25,20 @@ export function Header() {
         <Button variant="outline" asChild>
           <a
             target="_blank"
-            href="https://github.com/anis-marrouchi/vercel-ai-sdk-quiz.git"
+            href="https://everlearns.com"
             rel="noopener noreferrer"
           >
-            <IconGitHub />
-            <span className="hidden ml-2 md:flex">GitHub</span>
+            <MagicWandIcon />
+            <span className="hidden ml-2 md:flex">AI Course Creation Tool</span>
           </a>
         </Button>
         <Button asChild>
           <a
-            href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanis-marrouchi%2Fvercel-ai-sdk-quiz.git&env=OPENAI_API_KEY&envDescription=OpenAI+API+Key&envLink=https%3A%2F%2Fplatform.openai.com%2Fapi-keys"
+            href="https://www.facebook.com/groups/aiforeducator"
             target="_blank"
           >
-            <IconVercel className="mr-2" />
-            <span className="hidden sm:block">Deploy to Vercel</span>
-            <span className="sm:hidden">Deploy</span>
+            <HomeIcon className="mr-2" />
+            <span className="hidden sm:block">AI for Educators Community</span>
           </a>
         </Button>
       </div>
