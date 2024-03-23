@@ -2,23 +2,6 @@ import { Button } from '@/components/ui/button';
 import { IconArrowRight } from '@/components/ui/icons';
 import Link from 'next/link';
 
-function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function getRandomElements(arr: any[], count: any) {
-  return arr.filter((item) => ['reactjs', 'javascript', 'python'].includes(item.topic))
-}
-
-function generateMessage(topic: string) {
-  const sentenceVariants = [
-    `Start a quiz on ${capitalizeFirstLetter(topic)}`,
-  ];
-  const randomIndex = Math.floor(Math.random() * sentenceVariants.length);
-  return sentenceVariants[randomIndex];
-}
-
-
 export function EmptyScreen({
   submitMessage,
 }: {

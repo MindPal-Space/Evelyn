@@ -2,6 +2,7 @@
 
 import { IconAI, IconUser } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import { MemoizedReactMarkdown } from '../markdown';
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
@@ -26,8 +27,8 @@ export function BotMessage({
 }) {
   return (
     <div className={cn('group relative flex items-start md:-ml-12', className)}>
-      <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm bg-primary text-primary-foreground">
-        <IconAI />
+      <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm bg-primary text-primary-foreground overflow-hidden">
+        <Image src={"/icon.png"} alt="EverLearns Icon" width={100} height={100} className="w-full aspect-square" />
       </div>
       <div className="ml-4 flex-1 overflow-hidden px-1">
         {typeof children === 'string' ? (
