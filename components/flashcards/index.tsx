@@ -24,7 +24,7 @@ export async function generateFlashcardList (topic: string) {
   });
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-3.5-turbo-0125',
     stream: false,
     messages: getFlashcardGenMsgList({
       prompt: topic,
