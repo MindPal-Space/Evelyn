@@ -1,8 +1,6 @@
-import './globals.css';
+import '../globals.css';
 import type { Metadata } from 'next';
-import { Analytics } from '@vercel/analytics/react';
 import { Toaster } from '@/components/ui/toaster';
-import { AI } from './action';
 import { Header } from '@/components/header';
 import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
@@ -11,15 +9,15 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 const inter = Inter({ subsets: ["cyrillic", "cyrillic-ext", "greek", "greek-ext", "latin", "latin-ext", "vietnamese"] });
 
 const meta = {
-  title: 'EverLearns AI Tutor Demo',
+  title: 'Evelyn Smart Tutor',
   description:
-    'A demo of the EverLearns AI Tutor, a tutor that is smart enough to use several interfaces to interact with your students.',
+    'Evelyn Smart Tutor, a tutor that is smart enough to use several interfaces to interact with your students.',
 };
 export const metadata: Metadata = {
   ...meta,
   title: {
-    default: 'EverLearns AI Tutor Demo',
-    template: `%s - EverLearns AI Tutor Demo`,
+    default: 'Evelyn Smart Tutor',
+    template: `%s - Evelyn Smart Tutor`,
   },
   icons: {
     icon: '/favicon.ico',
@@ -56,23 +54,19 @@ export default function RootLayout({
         className={`${inter.className} font-sans antialiased`}
       >
         <Toaster />
-        {/* @ts-ignore */}
-        <AI>
-          <Providers
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex flex-col flex-1 bg-muted/50 dark:bg-background">
-                {children}
-              </main>
-            </div>
-          </Providers>
-        </AI>
-        <Analytics />
+        <Providers
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex flex-col flex-1 bg-muted/50 dark:bg-background">
+              {children}
+            </main>
+          </div>
+        </Providers>
       </body>
       <GoogleAnalytics gaId="G-RXGK3N19GT" />
     </html>

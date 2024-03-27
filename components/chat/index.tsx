@@ -1,11 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-import { useUIState, useActions } from 'ai/rsc';
-import { UserMessage } from '@/components/quiz/message';
-
-import { type AI } from './action';
+import { useUIState, useActions, useAIState } from 'ai/rsc';
+import { BotCard, BotMessage, UserMessage } from '@/components/message';
 import { ChatScrollAnchor } from '@/lib/hooks/chat-scroll-anchor';
 import { FooterText } from '@/components/footer';
 import Textarea from 'react-textarea-autosize';
@@ -19,14 +16,63 @@ import { IconArrowElbow, IconPlus } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { ChatList } from '@/components/chat-list';
 import { EmptyScreen } from '@/components/empty-screen';
-import Script from 'next/script';
+import { nanoid } from 'ai';
+import { AI, AIState } from '@/app/action';
+import { useRouter, useParams } from 'next/navigation';
+import { ChatProps } from '@/lib/types';
+import { FlashcardListCard } from '../flashcards';
+import { MarkmapCard } from '../markmap';
+import QuizQuestion from '../quiz/quiz-question';
 
-export default function Page() {
-  const [messages, setMessages] = useUIState<typeof AI>();
+export const getUIStateFromAIState = (aiState: AIState) => {
+  return aiState.messages
+    .filter(message => message.role.toLowerCase() !== 'system')
+    .map(message => ({
+      id: message.id,
+      display:
+        message.role.toLowerCase() === 'function' ? (
+          message.name === 'generate_mindmap' ? (
+            <BotCard><MarkmapCard {...JSON.parse(message.content)} /></BotCard>
+          ) : message.name === 'generate_flashcards' ? (
+            <BotCard><FlashcardListCard {...JSON.parse(message.content)} /></BotCard>
+          ) : message.name === 'generate_quiz' ? (
+            <BotCard><QuizQuestion {...JSON.parse(message.content)} /></BotCard>
+          ) : (
+            <></>
+          )
+        ) : message.role.toLowerCase() === 'user' ? (
+          <UserMessage>{message.content}</UserMessage>
+        ) : (
+          <BotMessage>{message.content}</BotMessage>
+        )
+    }))
+}
+
+export default function Chat() {
+
+  const { id } = useParams();
+  const router = useRouter();
+
+  const [ aiState, setAiState ] = useAIState<typeof AI>();
+  const [ messages, setMessages ] = useUIState<typeof AI>();
   const { submitUserMessage } = useActions<typeof AI>();
   const [inputValue, setInputValue] = useState('');
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const licenseKeyPurchaseBtnRef = useRef<HTMLButtonElement | null>(null);
+  const openAiApiKeyInputBtnRef = useRef<HTMLButtonElement | null>(null); 
+
+  useEffect(() => {
+    if (id && aiState.messages.length == 0) {
+      const savedChatData = localStorage.getItem("chat-" + id as string);
+      if (savedChatData) {
+        const chatData = JSON.parse(savedChatData) as ChatProps;
+        setAiState({ chatId: chatData.id, messages: chatData.messages });
+        setMessages(getUIStateFromAIState({ chatId: String(id), messages: chatData.messages }));
+      }
+    }
+  }, [aiState, id])
  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,6 +106,28 @@ export default function Page() {
       e.target['message']?.blur();
     }
 
+    // If not UNLIMITED USER
+    const licenseKey = localStorage.getItem('licenseKey');
+    const openAiApiKey = localStorage.getItem('openAiApiKey');
+    const savedChatList = Object.keys(localStorage).filter(item => item.startsWith("chat-"));
+    if (!licenseKey) {
+      if (savedChatList.length >= 1 && (!id || !savedChatList.includes("chat-" + id))) {
+        alert("Free users cannot start more than 1 chat. Please upgrade to continue.");
+        licenseKeyPurchaseBtnRef.current?.click();
+        return;
+      }
+      if (messages.length >= 20) {
+        alert("Free users can only get up to 10 AI messages per chat. Please upgrade to continue.");
+        licenseKeyPurchaseBtnRef.current?.click();
+        return;
+      } 
+    } 
+    if (licenseKey && !openAiApiKey) {
+      alert("Missing OpenAI API Key. Please input one to continue.");
+      openAiApiKeyInputBtnRef.current?.click();
+      return;
+    }
+
     const value = inputValue.trim();
     setInputValue('');
     if (!value) return;
@@ -68,7 +136,7 @@ export default function Page() {
     setMessages((currentMessages: any[]) => [
       ...currentMessages,
       {
-        id: Date.now(),
+        id: nanoid(),
         display: <UserMessage>{value}</UserMessage>,
       },
     ]);
@@ -86,6 +154,21 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    if (aiState.messages.length > 0) {
+      localStorage.setItem("chat-" + (id ? id : aiState.chatId), JSON.stringify({
+        ...aiState,
+        title: aiState.messages[0].content.substring(0, 100) || "New chat",
+      } as ChatProps));
+    }
+  }, [aiState.messages])
+
+  useEffect(() => {
+    if (!id && aiState.chatId && aiState.messages.length > 0) {
+      router.push(`/${aiState.chatId}`);
+    }
+  }, [id, aiState])
+
   return (
     <div>
       <div className="pb-[200px] pt-4 md:pt-10">
@@ -100,7 +183,7 @@ export default function Page() {
               setMessages((currentMessages: any[]) => [
                 ...currentMessages,
                 {
-                  id: Date.now(),
+                  id: nanoid(),
                   display: <UserMessage>{message}</UserMessage>,
                 },
               ]);
@@ -132,7 +215,7 @@ export default function Page() {
                       className="absolute left-0 w-8 h-8 p-0 rounded-full top-4 bg-background sm:left-4"
                       onClick={e => {
                         e.preventDefault();
-                        window.location.reload();
+                        router.push("/");
                       }}
                     >
                       <IconPlus />
@@ -173,25 +256,10 @@ export default function Page() {
                 </div>
               </div>
             </form>
-            <FooterText className="hidden sm:block" />
+            <FooterText className="hidden sm:block" licenseKeyPurchaseBtnRef={licenseKeyPurchaseBtnRef} openAiApiKeyInputBtnRef={openAiApiKeyInputBtnRef} />
           </div>
         </div>
       </div>
-      <Script async src="https://tally.so/widgets/embed.js"></Script>
-      <Script>
-        {`window.TallyConfig = {
-          "formId": "3XDM1j",
-          "popup": {
-            "width": 340,
-            "emoji": {
-              "text": "👋",
-              "animation": "wave"
-            },
-            "doNotShowAfterSubmit": true,
-            "autoClose": false,
-          }
-        };`}
-      </Script>
     </div>
   );
 }

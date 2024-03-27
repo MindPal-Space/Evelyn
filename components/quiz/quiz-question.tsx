@@ -6,7 +6,10 @@ import { AI } from "@/app/action";
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from '../ui/toast';
 import { MemoizedReactMarkdown } from '../markdown';
-import { UserMessage } from './message';
+import { UserMessage } from '../message';
+import { Button } from '../ui/button';
+import { nanoid } from 'ai';
+import { Card } from '../ui/card';
 
 // @ts-ignore
 export default function QuizQuestion({ question, questionType, possibleAnswers, showAnswer, answer, explanation, source }) {
@@ -50,7 +53,7 @@ export default function QuizQuestion({ question, questionType, possibleAnswers, 
     setMessages((currentMessages: any[]) => [
       ...currentMessages,
       {
-        id: Date.now(),
+        id: nanoid(),
         display: <UserMessage>{`My answer is: "${selectedOption}"`}</UserMessage>,
       },
     ]);
@@ -67,12 +70,10 @@ export default function QuizQuestion({ question, questionType, possibleAnswers, 
   };
 
   return (
-    <div className="w-full p-6 bg-white rounded-lg shadow-md">
-      <div className="mb-4">
-        <MemoizedReactMarkdown>
-          {question}
-        </MemoizedReactMarkdown>
-      </div>
+    <Card className="p-4 w-full flex flex-col gap-0 items-start justify-center">
+      <MemoizedReactMarkdown>
+        {question}
+      </MemoizedReactMarkdown>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           {/* @ts-ignore */}
@@ -97,14 +98,11 @@ export default function QuizQuestion({ question, questionType, possibleAnswers, 
           ))}
         </div>
         <div className="mt-6">
-          <button type="submit"
-            disabled={answerUI}
-            className="shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[rgba(0,118,255,0.9)] px-8 py-2 bg-[#0070f3] rounded-md text-white font-light transition duration-200 ease-linear"
-          >
-            Submit Answer
-          </button>
+          <Button type="submit" disabled={answerUI}>
+            Submit answer
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 }

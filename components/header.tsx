@@ -17,7 +17,7 @@ export function Header() {
         <IconSeparator className="w-6 h-6 text-muted-foreground/20" />
         <Link href="/">
           <span className="text-lg font-semibold">
-            AI Tutor Demo
+            Evelyn Smart Tutor
           </span>
         </Link>
       </span>

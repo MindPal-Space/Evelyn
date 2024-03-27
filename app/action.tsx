@@ -1,13 +1,15 @@
-import 'server-only';
-import { createAI, getMutableAIState, render } from 'ai/rsc';
+"use server";
+
+import { createAI, getAIState, getMutableAIState, render } from 'ai/rsc';
 import OpenAI from 'openai';
 import { z } from 'zod';
 import { generateMindmap, MarkmapCard } from '@/components/markmap';
 import { FlashcardListCard, generateFlashcardList } from '@/components/flashcards';
-import { BotMessage, BotCard } from '@/components/quiz/message';
-import { spinner } from '@/components/quiz/spinner';
+import { BotMessage, BotCard, UserMessage } from '@/components/message';
 import QuizQuestion from '@/components/quiz/quiz-question';
 import { generateQuiz } from '@/components/quiz';
+import { nanoid } from 'ai';
+import { spinner } from '@/components/spinner';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -15,7 +17,7 @@ const openai = new OpenAI({
 
 async function submitAnswer(answer: string) {
   'use server';
-  const response = await submitUserMessage(`${answer}`);
+  const response = await submitUserMessage(`My answer is: ${answer}`);
   return {
     answerUI: true,
     newMessage: response,
@@ -25,14 +27,18 @@ async function submitAnswer(answer: string) {
 async function submitUserMessage(content: string) {
   'use server';
   const aiState = getMutableAIState<typeof AI>();
-  aiState.update([
-    ...aiState.get(),
-    {
-      role: 'user',
-      content,
-    },
-  ]);
 
+  aiState.update({
+    ...aiState.get(),
+    messages: [
+      ...aiState.get().messages,
+      {
+        id: nanoid(),
+        role: 'user',
+        content,
+      }
+    ]
+  })
 
   const ui = render({
     provider: openai,
@@ -42,17 +48,26 @@ async function submitUserMessage(content: string) {
         role: 'system',
         content: 'You are a helpful teaching assistant that deploys different methods to engage/help your students in their learning. Ask follow-up questions to get sufficient input before doing anything. DONT make up information.'
       },
-      ...aiState.get().map((info: any) => ({
+      ...aiState.get().messages.map((info: any) => ({
         role: info.role,
         content: info.content,
         name: info.name,
       })),
     ],
     initial: <BotMessage className="items-center">{spinner}</BotMessage>,
-    // @ts-ignore
     text: ({content, done}) => {
       if (done) {
-        aiState.done([...aiState.get(), { role: 'assistant', content }]);
+        aiState.done({
+          ...aiState.get(),
+          messages: [
+            ...aiState.get().messages,
+            {
+              id: nanoid(),
+              role: 'assistant',
+              content
+            }
+          ]
+        })
       }
       return <BotMessage>{content}</BotMessage>;
     },
@@ -66,15 +81,18 @@ async function submitUserMessage(content: string) {
         render: async function* ({ topic } : { topic: string }) {
           yield <BotMessage className="items-center">{spinner}</BotMessage>;
           const result = await generateMindmap(topic);
-          const nextAIStateItem = {
-            role: "function",
-            name: "generate_mindmap",
-            content: JSON.stringify(result),
-          };
-          aiState.done([
+          aiState.done({
             ...aiState.get(),
-            nextAIStateItem,
-          ]);
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: "generate_mindmap",
+                content: JSON.stringify(result)
+              }
+            ]
+          })
           return <BotMessage><MarkmapCard {...result} /></BotMessage>;
         },  
       },
@@ -87,15 +105,18 @@ async function submitUserMessage(content: string) {
         render: async function* ({ topic } : { topic: string }) {
           yield <BotMessage className="items-center">{spinner}</BotMessage>;
           const result = await generateFlashcardList(topic);
-          const nextAIStateItem = {
-            role: "function",
-            name: "generate_flashcards",
-            content: JSON.stringify(result),
-          };
-          aiState.done([
+          aiState.done({
             ...aiState.get(),
-            nextAIStateItem,
-          ]);
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: "generate_flashcards",
+                content: JSON.stringify(result)
+              }
+            ]
+          })
           return <BotMessage><FlashcardListCard {...result} /></BotMessage>;
         },  
       },
@@ -109,32 +130,22 @@ async function submitUserMessage(content: string) {
           possibleAnswers: z.array(z.string())
             .describe('An array of possible answers for the question.'),
         }).required(),
-        /// @ts-ignore
         render: async function* ({ topic, type, possibleAnswers }) {
           yield <BotCard>{spinner}</BotCard>;
           const result = await generateQuiz(topic, type);
-          const nextAIStateItem = {
-            role: "function",
-            name: "generate_quiz",
-            content: JSON.stringify(result),
-          };
-          aiState.done([
+          aiState.done({
             ...aiState.get(),
-            nextAIStateItem,
-          ]);
-          // Update the AI state with the current question details
-          aiState.done([
-            ...aiState.get(),
-            {
-              role: 'function',
-              name: 'generate_quiz',
-              content: JSON.stringify(result),
-            },
-          ]);
-          // Update the UI with the current question
-          return <BotCard>
-            <QuizQuestion {...result} />
-          </BotCard>;
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: "generate_quiz",
+                content: JSON.stringify(result)
+              }
+            ]
+          })
+          return <BotCard><QuizQuestion {...result} /></BotCard>;
 
         }
       },
@@ -142,30 +153,66 @@ async function submitUserMessage(content: string) {
   });
 
   return {
-    id: Date.now(),
+    id: nanoid(),
     display: ui,
   };
 }
 
-// Define necessary types and create the AI.
+export type Message = {
+  role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
+  content: string
+  id: string
+  name?: string
+}
 
-const initialAIState: {
-  role: 'user' | 'assistant' | 'system' | 'function';
-  content: string;
-  id?: string;
-  name?: string;
-}[] = [];
+export type AIState = {
+  chatId: string
+  messages: Message[]
+}
 
-const initialUIState: {
-  id: number;
-  display: React.ReactNode;
-}[] = [];
+export type UIState = {
+  id: string
+  display: React.ReactNode
+}[]
 
-export const AI: any = createAI({
+
+export const AI: any = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
     submitAnswer,
   },
-  initialUIState,
-  initialAIState,
-});
+  initialUIState: [],
+  initialAIState: { chatId: nanoid(), messages: [] },
+  unstable_onGetUIState: async () => {
+    'use server'
+    const aiState = getAIState();
+    if (aiState) {
+      const uiState = getUIStateFromAIState(aiState);
+      return uiState;
+    }
+  },
+})
+
+export const getUIStateFromAIState = (aiState: AIState) => {
+  return aiState.messages
+    .filter(message => message.role.toLowerCase() !== 'system')
+    .map(message => ({
+      id: message.id,
+      display:
+        message.role.toLowerCase() === 'function' ? (
+          message.name === 'generate_mindmap' ? (
+            <BotCard><MarkmapCard {...JSON.parse(message.content)} /></BotCard>
+          ) : message.name === 'generate_flashcards' ? (
+            <BotCard><FlashcardListCard {...JSON.parse(message.content)} /></BotCard>
+          ) : message.name === 'generate_quiz' ? (
+            <BotCard><QuizQuestion {...JSON.parse(message.content)} /></BotCard>
+          ) : (
+            <></>
+          )
+        ) : message.role.toLowerCase() === 'user' ? (
+          <UserMessage>{message.content}</UserMessage>
+        ) : (
+          <BotMessage>{message.content}</BotMessage>
+        )
+    }))
+}
