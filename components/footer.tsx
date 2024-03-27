@@ -1,18 +1,33 @@
-import React from 'react';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { ExternalLink } from '@/components/external-link';
+import React, { MutableRefObject } from 'react';
+import PreviousChatList from './chat/PreviousChatList';
+import LicenseKeyPurchase from './chat/LicenseKeyPurchase';
+import OpenAiApiKeyInput from './chat/OpenAiApiKeyInput';
+import { ExternalLink } from './external-link';
 
-export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
+interface FooterTextProps {
+  className: string;
+  licenseKeyPurchaseBtnRef: MutableRefObject<HTMLButtonElement | null>;
+  openAiApiKeyInputBtnRef: MutableRefObject<HTMLButtonElement | null>;
+}
+
+export function FooterText({ licenseKeyPurchaseBtnRef, openAiApiKeyInputBtnRef }: FooterTextProps) {
+
+  const licenseKey = localStorage.getItem('licenseKey');
+
   return (
-    <p
-      className={cn(
-        'px-2 text-center text-xs leading-normal text-muted-foreground',
-        className,
-      )}
-      {...props}
+    <div
+      className='px-2 text-center text-xs leading-normal text-muted-foreground flex items-center justify-center gap-4'
     >
-      Part of <ExternalLink href={"https://everlearns.com"}>EverLearns</ExternalLink>, developed by <ExternalLink href={"https://mindpal.io/"}>MindPal Labs</ExternalLink>{' '}
-    </p>
+      <LicenseKeyPurchase triggerBtnRef={licenseKeyPurchaseBtnRef} />
+      {licenseKey && <OpenAiApiKeyInput triggerBtnRef={openAiApiKeyInputBtnRef} />}
+      <PreviousChatList />
+      <div>
+        <ExternalLink href='mailto:hi.everlearns@gmail.com'>
+          Contact
+        </ExternalLink>
+      </div>
+    </div>
   );
 }

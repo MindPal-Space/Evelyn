@@ -10,35 +10,23 @@ export function EmptyScreen({
 
   const exampleMessages = [
     {
-      heading: 'Start a quiz',
-      message: 'Start a quiz',
+      heading: 'Start a quiz about planet facts',
     },
     {
-      heading: 'Generate a mindmap',
-      message: 'Generate a mindmap',
+      heading: 'Generate a mindmap about marketing principles',
     },
     {
-      heading: 'Give me some flashcards',
-      message: 'Give me some flashcards',
+      heading: 'Give me some flashcards about artificial intelligence',
     },
   ];
   return (
     <div className="mx-auto max-w-2xl px-4">
     <div className="rounded-lg border bg-background p-8 mb-4">
       <h1 className="mb-2 text-lg font-semibold">
-        Welcome to EverLearns AI Tutor Demo!
+        Welcome to Evelyn!
       </h1>
       <p className="mb-2 leading-normal text-muted-foreground">
-        Imagine an AI tutor that not only provides text-based answers to your students' questions but is also smart enough to utilize various interfaces such as <span className='font-bold'>quizzes, flashcards, and mind maps</span> for <span className='font-bold'>interactive</span> engagement.
-      </p>
-      <p className="mb-2 leading-normal text-muted-foreground">
-        It's EverLearns AI Tutor, and this is her early demo.
-      </p>
-      <p className="mb-2 leading-normal text-muted-foreground">
-        Soon, you will be able to train EverLearns AI Tutor on <span className='font-bold'>ALL your teaching materials</span>, such as books, lectures, slides, papers, and more.
-      </p>
-      <p className="mb-2 leading-normal text-muted-foreground">
-        Excited? Join our waitlist to be among the first to bring this AI Tutor to your school. 
+        A smart tutor that can not only provide text-based answers but also:
       </p>
       <div className="mt-4 flex flex-col items-start space-y-2 mb-4">
         {exampleMessages.map((message, index) => (
@@ -47,7 +35,7 @@ export function EmptyScreen({
             variant="link"
             className="h-auto p-0 text-base"
             onClick={async () => {
-              submitMessage(message.message);
+              submitMessage(message.heading);
             }}
           >
             <IconArrowRight className="mr-2 text-muted-foreground" />

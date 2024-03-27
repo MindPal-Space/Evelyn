@@ -1,9 +1,9 @@
 'use client';
 
-import { IconAI, IconUser } from '@/components/ui/icons';
+import { IconUser } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { MemoizedReactMarkdown } from '../markdown';
+import { MemoizedReactMarkdown } from './markdown';
 
 export function UserMessage({ children }: { children: React.ReactNode }) {
   return (
@@ -54,11 +54,11 @@ export function BotCard({
     <div className="group relative flex items-start md:-ml-12">
       <div
         className={cn(
-          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm bg-primary text-primary-foreground',
+          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm bg-primary text-primary-foreground overflow-hidden',
           !showAvatar && 'invisible',
         )}
       >
-        <IconAI />
+        <Image src={"/icon.png"} alt="EverLearns Icon" width={100} height={100} className="w-full aspect-square" />
       </div>
       <div className="ml-4 flex-1 px-1">{children}</div>
     </div>
