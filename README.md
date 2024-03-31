@@ -1,10 +1,9 @@
-<a href="https://sdk.vercel.ai/rsc-demo">
-  <img alt="Generative UI Demo" src="https://github.com/vercel/ai/assets/4060187/f21fa839-c710-4f09-9af4-2056f603d98f">
-  <h1 align="center">Generative UI QUIZ Demo</h1>
+<a href="https://chat.everlearns.co">
+  <h1 align="center">Evelyn Smart Tutor</h1>
 </a>
 
 <p align="center">
-  An experimental QUIZ using AI SDK 3.0 with Generative UI support
+  An AI tutor that engages - an experiment using Generative UI
 </p>
 
 ## Features
@@ -16,16 +15,9 @@
 
 ## Quick Links
 
-- [Read the blog post](https://vercel.com/blog/ai-sdk-3-generative-ui)
-- [See the demo](https://sdk.vercel.ai/demo)
-- [Visit the docs](https://sdk.vercel.ai/docs/concepts/ai-rsc)
+- [See the demo](https://youtu.be/Svm9ZItg6U8)
+- This project is inspired by the great demo from [anis-marrouchi](https://github.com/anis-marrouchi), check it [here](https://github.com/anis-marrouchi/vercel-ai-sdk-quiz)
 
-## Deploy Your Own
-
-You can deploy your own version of the demo to Vercel with one click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanis-marrouchi%2Fvercel-ai-sdk-quiz.git&env=OPENAI_API_KEY&envDescription=OpenAI+API+Key&envLink=https%3A%2F%2Fplatform.openai.com%2Fapi-keys
-)
 
 ## Running locally
 
@@ -44,12 +36,3 @@ pnpm dev
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
 
-## Authors
-
-The library AI SDK is created by [Vercel](https://vercel.com) and [Next.js](https://nextjs.org) team members, with contributions from:
-
-- Shu Ding ([@shuding\_](https://twitter.com/shuding_)) - [Vercel](https://vercel.com)
-- Max Leiter ([@max_leiter](https://twitter.com/max_leiter)) - [Vercel](https://vercel.com)
-- Jeremy Philemon ([@jeremyphilemon](https://github.com/jeremyphilemon)) - [Vercel](https://vercel.com)
-- shadcn ([@shadcn](https://twitter.com/shadcn)) - [Vercel](https://vercel.com)
-- Jared Palmer ([@jaredpalmer](https://twitter.com/jaredpalmer)) - [Vercel](https://vercel.com)
