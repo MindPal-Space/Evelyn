@@ -17,6 +17,7 @@
 
 - [See the demo](https://youtu.be/Svm9ZItg6U8)
 - This project is inspired by the great demo from [anis-marrouchi](https://github.com/anis-marrouchi), check it [here](https://github.com/anis-marrouchi/vercel-ai-sdk-quiz)
+- If you want a platform to build AI tutors like this, check [https://www.everlynai.com](https://www.everlynai.com)
 
 
 ## Running locally
@@ -35,4 +36,5 @@ pnpm dev
 ```
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
+
 
